@@ -486,12 +486,21 @@ public class RCTBluetoothSerialModule extends ReactContextBaseJavaModule impleme
         }
     }
 
+    private WritableMap mWriteMap = null;
+    private WritableArray mWritableArray = null;
+
     void onByteArrayData(byte [] data, int bytes) {
-        WritableMap params = Arguments.createMap();
-        WritableArray writableArray = Arguments.createArray();
-        for(int i=0;i<bytes;i++)  writableArray.pushInt(data[i]&0xff);
-        params.putArray("data", writableArray);
-        sendEvent(DEVICE_READ, params);
+        
+        if(mWriteMap == null) mWriteMap = Arguments.createMap();
+        if(mWritableArray == null) mWritableArray = Arguments.createArray();
+        for(int i=0;i<bytes;i++)  mWritableArray.pushInt(data[i]&0xff);
+
+        if((data[bytes-1]&0xff) == 0xbb ) {
+            mWriteMap.putArray("data", mWritableArray);
+            sendEvent(DEVICE_READ, mWriteMap);
+            mWriteMap = null;
+            mWritableArray = null;
+        }
     }
 
     private String readUntil(String delimiter) {

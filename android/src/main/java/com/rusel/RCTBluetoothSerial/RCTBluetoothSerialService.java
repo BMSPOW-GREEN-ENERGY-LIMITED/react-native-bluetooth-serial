@@ -304,17 +304,10 @@ class RCTBluetoothSerialService {
             while (true) {
                 try {
 
-                    bytes = mmInStream.available();
-                    if(bytes != 0) {
-                        SystemClock.sleep(100);
-                        bytes = mmInStream.available();
-                        bytes = mmInStream.read(buffer, 0, bytes);
-
-                        mModule.onByteArrayData(buffer, bytes);
-
-                        String data = new String(buffer, 0, bytes, "ISO-8859-1");
-                        mModule.onData(data);
-                    }
+                    bytes = mmInStream.read(buffer);
+                    mModule.onByteArrayData(buffer, bytes);
+                    String data = new String(buffer, 0, bytes, "ISO-8859-1");
+                    mModule.onData(data);
 
                 } catch (Exception e) {
                     Log.e(TAG, "disconnected", e);
