@@ -1,6 +1,7 @@
 package com.rusel.RCTBluetoothSerial;
 
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -483,6 +484,14 @@ public class RCTBluetoothSerialModule extends ReactContextBaseJavaModule impleme
             params.putString("data", completeData);
             sendEvent(DEVICE_READ, params);
         }
+    }
+
+    void onByteArrayData(byte [] data, int bytes) {
+        WritableMap params = Arguments.createMap();
+        WritableArray writableArray = Arguments.createArray();
+        for(int i=0;i<bytes;i++)  writableArray.pushInt(data[i]&0xff);
+        params.putArray("data", writableArray);
+        sendEvent(DEVICE_READ, params);
     }
 
     private String readUntil(String delimiter) {
